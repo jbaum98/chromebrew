@@ -1,29 +1,28 @@
-require 'package_helpers'
+require 'find'
+require 'json'
 
 class Package
-  property :version, :binary_url, :binary_sha1, :source_url, :source_sha1, :is_fake
-  
-  class << self
-    attr_reader :dependencies, :is_fake
-    attr_accessor :name
-  end
-  def self.depends_on (dependency = nil)
-    @dependencies = [] unless @dependencies
-    if dependency
-      @dependencies << dependency
+  attr_reader :version, :binary_url, :binary_sha1, :source_url, :source_sha1, :is_fake, :name, :dependencies
+  CREW_PREFIX = '/usr/local'
+  CREW_LIB_PATH = CREW_PREFIX + '/lib/crew/'
+  CREW_CONFIG_PATH = CREW_PREFIX + '/etc/crew/'
+  CREW_BREW_DIR = CREW_PREFIX + '/tmp/crew/'
+  CREW_DEST_DIR = CREW_BREW_DIR + '/dest'
+
+  def self.packages
+    packages = {}
+    Find.find (CREW_LIB_PATH + 'packages') do |filename|
+      packageName = File.basename filename, '.rb'
+      packages[packageName] = self.installed? packageName
     end
-    @dependencies
-  end
-  
-  def self.is_fake
-    @is_fake = true
-  end
-  
-  def self.is_fake?
-    @is_fake
+    return packages
   end
 
-  def self.build
-    
+  def self.installed? packageName
+    Find.find(CREW_CONFIG_PATH + 'meta/') do |packageList|
+      return true if packageList == CREW_CONFIG_PATH + 'meta/' + packageName + '.filelist'
+    end
+    return false
   end
+
 end
