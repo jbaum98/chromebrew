@@ -1,14 +1,13 @@
 #chromebrew directories
-OWNER="skycocker"
+OWNER="jbaum98"
 REPO="chromebrew"
-BRANCH="master"
+BRANCH="linuxbrew_install"
 URL="https://raw.github.com/$OWNER/$REPO/$BRANCH"
 CREW_PREFIX=/usr/local
-CREW_LIB_PATH=$CREW_PREFIX/lib/crew/
-CREW_CONFIG_PATH=$CREW_PREFIX/etc/crew/
-CREW_BREW_DIR=$CREW_PREFIX/tmp/crew/
-CREW_DEST_DIR=$CREW_BREW_DIR/dest
-CREW_PACKAGES_PATH=$CREW_LIB_PATH/packages
+CREW_PATH=$CREW_PREFIX/chromebrew
+CREW_LIB=$CREW_PATH/lib
+CREW_SRC=$CREW_PATH/sources
+CREW_FORMULAS=$CREW_PATH/packages
 
 user=$(whoami)
 architecture=$(uname -m)
@@ -19,15 +18,12 @@ if [ $architecture != "i686" ] && [ $architecture != "x86_64" ]; then
 fi
 
 #prepare directories
-sudo mkdir -p $CREW_LIB_PATH && sudo chown -R $user:$user $CREW_LIB_PATH
-sudo mkdir -p $CREW_CONFIG_PATH && sudo chown -R $user:$user $CREW_CONFIG_PATH
-sudo mkdir -p $CREW_CONFIG_PATH/meta && sudo chown -R $user:$user $CREW_CONFIG_PATH/meta
-sudo mkdir -p $CREW_BREW_DIR && sudo chown -R $user:$user $CREW_BREW_DIR
-sudo mkdir -p $CREW_DEST_DIR && sudo chown -R $user:$user $CREW_DEST_DIR
-sudo mkdir -p $CREW_PACKAGES_PATH && sudo chown -R $user:$user $CREW_PACKAGES_PATH
+sudo mkdir -p $CREW_LIBS && sudo chown -R $user:$user $CREW_LIB
+sudo mkdir -p $CREW_SRC && sudo chown -R $user:$user $CREW_SRC
+sudo mkdir -p $CREW_FORMULAS && sudo chown -R $user:$user $CREW_FORMULAS
 
 #cd into the brew directory, everything will happen there
-cd $CREW_BREW_DIR
+cd $CREW_SOURCES
 
 #download ruby
 echo "Downloading ruby..."
@@ -50,8 +46,6 @@ echo "Extracting ruby (this may take a while)..."
 tar -xf $tarname
 echo "Installing ruby (this may take a while)..."
 sudo cp -r ./usr/* /usr
-mv ./dlist $CREW_CONFIG_PATH/meta/ruby.directorylist
-mv ./filelist $CREW_CONFIG_PATH/meta/ruby.filelist
 
 #download, prepare and install chromebrew
 cd $CREW_LIB_PATH
